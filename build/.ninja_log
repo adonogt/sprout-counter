@@ -1,0 +1,13 @@
+# ninja log v6
+0	5	1759328086545962485	CMakeFiles/sprout_counter.elf.dir/boards/bluepill_f103/startup/startup_stm32f103xb.s.obj	3b3aa1917f84784f
+5	156	1759328086552164150	CMakeFiles/sprout_counter.elf.dir/apps/main.c.obj	53363a04a82e5bfd
+1	163	1759328086547760947	CMakeFiles/sprout_counter.elf.dir/apps/drivers/src/drv_gpio.c.obj	3022b3dc82521e4f
+1	166	1759328086547495982	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c.obj	17c0a925e63807
+0	171	1759328086547148040	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c.obj	d7a5128919791fc3
+1	178	1759328086547586790	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c.obj	6f2b0e41e38c369e
+0	183	1759328086547256725	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c.obj	51abdc7103bae17e
+5	183	1759328086551348074	CMakeFiles/sprout_counter.elf.dir/apps/setup/src/app_setup.c.obj	d61f3d568c444a46
+1	188	1759328086547676241	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c.obj	95cafe7105ac2b96
+1	221	1759328086547404697	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c.obj	70c6934ba82e6e4c
+0	224	1759328086547328706	CMakeFiles/sprout_counter.elf.dir/home/adonogt/hal/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj	d319a19c194b1867
+224	253	1759328086769969129	sprout_counter.elf	ccd5ee7b66333f13

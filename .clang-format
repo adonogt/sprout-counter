@@ -1,0 +1,40 @@
+# Clang-Format configuration for mixed C/C headers in bare-metal STM32 projects.
+# Philosophy: predictable diffs, readable C, no tabs, 100 cols.
+
+BasedOnStyle: LLVM
+ColumnLimit: 100
+UseTab: Never
+IndentWidth: 4
+TabWidth: 4
+PointerAlignment: Left
+BreakBeforeBraces: Linux
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Empty
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+BinPackArguments: false
+BinPackParameters: false
+SpaceAfterCStyleCast: true
+SortIncludes: true
+IncludeBlocks: Regroup
+KeepEmptyLinesAtTheStartOfBlocks: false
+ContinuationIndentWidth: 8
+
+# Prefer compact enums/structs without trailing commas in C.
+Cpp11BracedListStyle: false
+
+# Per-language tweaks (C and C++ handled similarly; project is mostly C).
+Language: Cpp
+---
+Language: C
+BasedOnStyle: LLVM
+ColumnLimit: 100
+IndentWidth: 4
+PointerAlignment: Left
+BreakBeforeBraces: Linux
+AllowShortIfStatementsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
+SortIncludes: true
+IncludeBlocks: Regroup

@@ -1,0 +1,15 @@
+# Conservative checks for embedded C. Keep noise low; catch real issues.
+Checks: >
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-init-variables,
+  performance-*,
+  readability-braces-around-statements,
+  readability-inconsistent-declaration-parameter-name,
+  readability-named-parameter
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '^(apps|boards|libs|cmake|core|services|src|include)/'
+AnalyzeTemporaryDtors: false
+FormatStyle: none

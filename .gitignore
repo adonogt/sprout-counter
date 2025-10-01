@@ -1,0 +1,43 @@
+# Build artifacts
+/build/
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+
+# Dependency and cmake caches
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+cmake_install.cmake
+Makefile
+
+# Logs
+*.log
+
+# Neovim / LSP / Editor
+*.swp
+*.swo
+.session
+tags
+.cache/
+.clangd/
+.clangd-cache/
+.lsp/
+.vscode/
+.idea/
+
+# Backup files
+*~
+*.bak
+
+# Generated intermediate files
+*.d
+*.a
+*.so
+*.pyc
+__pycache__/
+

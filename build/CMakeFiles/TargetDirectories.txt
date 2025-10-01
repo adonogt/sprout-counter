@@ -1,0 +1,3 @@
+/home/adonogt/prjs/fw/sprout-counter/build/CMakeFiles/sprout_counter.elf.dir
+/home/adonogt/prjs/fw/sprout-counter/build/CMakeFiles/edit_cache.dir
+/home/adonogt/prjs/fw/sprout-counter/build/CMakeFiles/rebuild_cache.dir

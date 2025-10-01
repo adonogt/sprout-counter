@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/adonogt/prjs/fw/sprout-counter/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
