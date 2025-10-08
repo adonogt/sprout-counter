@@ -1,104 +1,119 @@
 # sprout-counter firmware
 
-firmware for stm32f103c8t6 (bluepill) to count seedlings detected by infrared sensors.  
-the system runs fully bare metal using stm32cube f1 hal and cmsis.  
-seed count and parameters are displayed and adjusted through a 0.91" ssd1306 oled using the u8g2 library.
-
----
+firmware for **stm32f103c8t6** to count seedlings detected by **infrared sensors** and display results on an **ssd1306 oled** using **u8g2** over **i2c1 (pb6/pb7)**.
 
 ## features
 
-- bare-metal stm32f103 firmware (no rtos)
-- infrared sensor pulse counting
-- configurable target count
-- 0.91" ssd1306 oled display (i2c, via u8g2)
-- user configuration through onboard buttons
-- modular drivers (gpio, system, display, counter)
-- clang + cmake + ninja build system for linux development
+- 3 infrared sensors with exti interrupts
+- 3 buttons for user control (inc, dec, ok/menu)
+- ssd1306 oled display (u8g2 over i2c1)
+- modular driver design: gpio, i2c, display, counter
+- cmake + ninja build system
+- flash and debug via openocd + st-link
 
----
+## functionality
 
-## hardware
+the firmware counts seedlings detected by the infrared sensors. the target count value and the current count can be adjusted using three buttons:
 
-- mcu: stm32f103c8t6 ("bluepill")
-- display: oled 0.91" ssd1306 (i2c)
-- sensors: infrared beam detectors (digital output)
-- buttons: momentary push buttons for configuration
+- inc: increases the target count (single step per press)
+- dec: decreases the target count (single step per press)
+- ok/menu: confirms the current selection; long press may open a simple menu to switch between editing the target value and resetting the current count (implementation detail in firmware)
 
-connections (example):
-```
-oled sda  → pb7  
-oled scl  → pb6  
-ir sensor input → pa0  
-buttons → pa1, pa2  
-```
+the oled display shows the current count and the target count in real time.
 
----
+## hardware setup
+
+| peripheral | function | pin  | note |
+|-------------|-----------|------|------|
+| i2c1        | scl       | pb6  | ssd1306 oled |
+|             | sda       | pb7  | ssd1306 oled |
+| ir sensors  | sensor1   | pa0  | exti0 |
+|             | sensor2   | pa1  | exti1 |
+|             | sensor3   | pa2  | exti2 |
+| buttons     | inc       | pb12 | increase target |
+|             | dec       | pb13 | decrease target |
+|             | ok/menu   | pb14 | confirm/menu |
+| led         | user led  | pc13 | active low |
 
 ## repository structure
 
 ```
 sprout-counter/
-├── board/                # board-level config (hal_conf, interrupt handlers, system init)
-├── cmake/                # toolchain and cmake helper files
-├── linker/               # linker script for stm32f103c8
+├── board/
+│   ├── stm32f1xx_it.c
+│   ├── system.c
+│   └── system.h
 ├── src/
+│   ├── main.c
 │   ├── drivers/
-│   │   ├── gpio/         # gpio driver with irq and callbacks
-│   │   └── system/       # system clock + hal init
-│   ├── main.c            # main application (counter logic + oled update loop)
-│   └── ...
-├── startup/              # startup assembly file
-└── build/                # generated build output (ignored by git)
+│   │   ├── gpio/
+│   │   ├── i2c/
+│   │   ├── display/
+│   │   ├── ir/
+│   │   └── buttons/
+├── lib/
+│   └── u8g2/
+├── linker/
+│   └── stm32f103c8tx_flash.ld
+├── startup/
+│   └── startup_stm32f103c8tx.s
+├── cmake/
+│   └── arm-none-eabi-gcc.cmake
+└── cmakelists.txt
 ```
-
----
 
 ## dependencies
 
-required packages on ubuntu/debian:
+note: this repository uses git submodules for third-party code (u8g2). ensure submodules are fetched (see display library section).
+
+### system packages
 
 ```bash
 sudo apt install cmake ninja-build gcc-arm-none-eabi binutils-arm-none-eabi openocd
 ```
 
-required stm32cube hal:
+### stm32cube hal
 
 ```bash
 mkdir -p ~/hal && cd ~/hal
-git clone https://github.com/STMicroelectronics/STM32CubeF1.git
+git clone https://github.com/stmicroelectronics/stm32cubef1.git
 ```
 
-optional (for display):
+### display library (u8g2)
+
+this repository uses git submodules. clone or update with submodules to fetch u8g2 correctly.
+
+clone with submodules:
+
 ```bash
-git clone https://github.com/olikraus/u8g2.git
+git clone --recurse-submodules <repo-url>
 ```
 
----
-
-## build
+if already cloned, update submodules:
 
 ```bash
-cmake -S . -B build -G Ninja \
+git submodule update --init --recursive
+```
+
+## build instructions
+
+```bash
+cmake -S . -B build -G ninja \
   -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi-gcc.cmake \
-  -DHAL_PATH=$HOME/hal/STM32CubeF1
+  -DHAL_PATH=$HOME/hal/stm32cubef1
 
 cmake --build build -v
 ```
 
-artifacts generated in `build/`:
+output files:
+
 ```
-stm32f103c8_bluepill.elf
-stm32f103c8_bluepill.bin
-stm32f103c8_bluepill.hex
-stm32f103c8_bluepill.map
+build/stm32f103c8.elf
+build/stm32f103c8.bin
+build/stm32f103c8.hex
 ```
 
----
-
-## flash
-
-with st-link and openocd:
+## flashing
 
 ```bash
 ninja -C build flash
@@ -108,47 +123,23 @@ or manually:
 
 ```bash
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
-  -c "program build/stm32f103c8_bluepill.elf verify reset exit"
+  -c "program build/stm32f103c8.elf verify reset exit"
 ```
-
----
 
 ## debugging
 
 ```bash
-# terminal 1
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg
-
-# terminal 2
-arm-none-eabi-gdb build/stm32f103c8_bluepill.elf \
+arm-none-eabi-gdb build/stm32f103c8.elf \
   -ex "target extended-remote :3333" \
   -ex "monitor reset halt" \
   -ex "load" \
   -ex "monitor reset run"
 ```
 
----
-
 ## license
 
-this project is released under the [mit license](LICENSE).
+mit license
 
-```
 copyright (c) 2025 adonogt
-permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "software"), to deal
-in the software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the software, and to permit persons to whom the software is
-furnished to do so, subject to the following conditions:
-...
-```
-
----
-
-## credits
-
-- stm32cube f1 hal by stmicroelectronics  
-- u8g2 graphics library by oliver kraus  
-- project setup and build system using clang, cmake, and ninja
 
