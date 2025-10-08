@@ -1,0 +1,5 @@
+CompileFlags:
+  add: [-I./src, -I./src/board, -I./src/drivers, -I./src/drivers/system, -I./src/drivers/gpio]
+Diagnostics:
+  ClangTidy:
+    Add: modernize*, performance*, readability*

@@ -1,0 +1,9 @@
+basedonstyle: llvm
+indentwidth: 2
+tabwidth: 2
+usecrlf: false
+columnlimit: 100
+derivespointeralignment: false
+pointeralignment: left
+sortincludes: false
+spacesbeforeparens: control-statements
