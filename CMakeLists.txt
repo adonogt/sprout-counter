@@ -6,7 +6,6 @@ project(stm32f103c8_bluepill C ASM)
 
 # ------------------------------------------------------------------------------
 # toolchain
-# pass the toolchain when configuring:
 #   cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi-gcc.cmake
 # ------------------------------------------------------------------------------
 
@@ -32,7 +31,7 @@ set(HAL_INC_DIR      ${HAL_PATH}/Drivers/STM32F1xx_HAL_Driver/Inc)
 set(STARTUP_ASM ${CMAKE_SOURCE_DIR}/startup/startup_stm32f103c8tx.s)
 set(SYSTEM_SRC  ${CMAKE_SOURCE_DIR}/board/system_stm32f1xx.c)
 
-# minimal hal needed for clock + gpio + systick
+# minimal hal needed for clock + gpio + systick + i2c
 set(HAL_SOURCES
   ${HAL_SRC_DIR}/stm32f1xx_hal.c
   ${HAL_SRC_DIR}/stm32f1xx_hal_rcc.c
@@ -42,17 +41,29 @@ set(HAL_SOURCES
   ${HAL_SRC_DIR}/stm32f1xx_hal_pwr.c
   ${HAL_SRC_DIR}/stm32f1xx_hal_flash.c
   ${HAL_SRC_DIR}/stm32f1xx_hal_flash_ex.c
+  ${HAL_SRC_DIR}/stm32f1xx_hal_i2c.c          # i2c hal enabled
   # add ${HAL_SRC_DIR}/stm32f1xx_hal_exti.c if you enable hal exti in hal_conf
 )
 
-# user sources
+# user sources (drivers + app; excludes vendor libs)
 file(GLOB_RECURSE SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.c)
+
 set(BOARD_FILES
   ${CMAKE_SOURCE_DIR}/board/stm32f1xx_it.c
 )
 
 # linker script
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/linker/STM32F103C8TX_FLASH.ld)
+
+# ------------------------------------------------------------------------------
+# u8g2 vendor library (submodule at lib/u8g2)
+# ------------------------------------------------------------------------------
+
+file(GLOB U8G2_C_SOURCES ${CMAKE_SOURCE_DIR}/lib/u8g2/csrc/*.c)
+add_library(u8g2 STATIC ${U8G2_C_SOURCES})
+target_include_directories(u8g2 PUBLIC
+  ${CMAKE_SOURCE_DIR}/lib/u8g2/csrc
+)
 
 # ------------------------------------------------------------------------------
 # target
@@ -66,6 +77,9 @@ add_executable(${PROJECT_NAME}.elf
   ${SRC_FILES}
 )
 
+# link vendor u8g2 (fonts/drivers); unused sections will be gc’d
+target_link_libraries(${PROJECT_NAME}.elf PRIVATE u8g2)
+
 # device/hal defines for the whole target
 target_compile_definitions(${PROJECT_NAME}.elf PRIVATE
   STM32F103x8
@@ -73,16 +87,22 @@ target_compile_definitions(${PROJECT_NAME}.elf PRIVATE
   USE_HAL_DRIVER
 )
 
-# include order: put board first so hal finds stm32f1xx_hal_conf.h here
+# include order: board first so hal finds our stm32f1xx_hal_conf.h
+# add lib/u8g2/csrc so headers like "u8g2.h" in display.h always resolve
 target_include_directories(${PROJECT_NAME}.elf BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/board
   ${HAL_INC_DIR}
   ${CMSIS_CORE_DIR}
   ${CMSIS_DEVICE_DIR}/Include
+
   ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/src/drivers
   ${CMAKE_SOURCE_DIR}/src/drivers/system
   ${CMAKE_SOURCE_DIR}/src/drivers/gpio
+  ${CMAKE_SOURCE_DIR}/src/drivers/i2c
+  ${CMAKE_SOURCE_DIR}/src/drivers/display
+
+  ${CMAKE_SOURCE_DIR}/lib/u8g2/csrc           # <-- ensures #include "u8g2.h" works anywhere
 )
 
 # common warnings/opts (toolchain sets cpu/thumb/sections)

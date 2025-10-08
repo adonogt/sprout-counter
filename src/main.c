@@ -8,6 +8,6 @@ int main(void)
   system_init();
   while (1) {
     gpio_toggle(&led_pc13);
-    HAL_Delay(100);
+    HAL_Delay(1000);
   }
 }

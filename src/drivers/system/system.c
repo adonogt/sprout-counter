@@ -1,12 +1,14 @@
-/* system bring-up for stm32f103 bluepill
- * comments are lowercase as requested
- */
-
 #include "system.h"
 #include "gpio.h"
+#include "drivers/i2c/i2c.h"
+#include "drivers/display/display.h"
 
 /* bluepill user led on pc13 (active low) */
 static const gpio_pin_t s_led_pc13 = { GPIOC, GPIO_PIN_13 };
+
+/* i2c1 state (pb6/pb7) */
+static i2c_bus_t g_i2c1;
+static bool      g_i2c1_ready = false;
 
 /* choose your clock source:
  * - option a (default): hse 8 mhz with pll to 72 mhz (common on bluepill)
@@ -89,6 +91,38 @@ void system_init(void)
   if (gpio_setup_output(&s_led_pc13, GPIO_SPEED_FREQ_LOW, /*initial_on=*/false) != gpio_ok) {
     system_error_loop();
   }
+
+  /* init i2c1 on pb6/pb7 @ 400 khz; no remap */
+  {
+    i2c_config_t cfg = {
+      .instance        = I2C1,
+      .clock_speed_hz  = 400000,
+      .scl_port        = GPIOB, .scl_pin = GPIO_PIN_6,
+      .sda_port        = GPIOB, .sda_pin = GPIO_PIN_7,
+      .i2c1_remap      = false
+    };
+    if (i2c_init(&g_i2c1, &cfg) == I2C_ST_OK) {
+      g_i2c1_ready = true;
+    } else {
+      g_i2c1_ready = false;
+      /* optional: add a visible fault indication here */
+    }
+  }
+
+  /* init display via u8g2 and print a banner for validation */
+  if (g_i2c1_ready) {
+    if (!display_init()) {
+      /* display failed to init; keep running */
+    } else {
+      display_write_version();
+    }
+  }
+}
+
+/* accessor: returns initialized i2c1 handle or null if init failed */
+i2c_bus_t* system_i2c1(void)
+{
+  return g_i2c1_ready ? &g_i2c1 : NULL;
 }
 
 /* simple blocking error loop:
