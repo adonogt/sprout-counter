@@ -28,7 +28,7 @@ Makefile
 .clangd/
 .clang-tidy
 .clang-format
-.cache/
+.cache/**
 compile_flags.txt
 
 # backup / logs
