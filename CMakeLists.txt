@@ -50,6 +50,7 @@ file(GLOB_RECURSE SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.c)
 
 set(BOARD_FILES
   ${CMAKE_SOURCE_DIR}/board/stm32f1xx_it.c
+  ${CMAKE_SOURCE_DIR}/board/syscalls.c
 )
 
 # linker script
@@ -101,6 +102,7 @@ target_include_directories(${PROJECT_NAME}.elf BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/src/drivers/gpio
   ${CMAKE_SOURCE_DIR}/src/drivers/i2c
   ${CMAKE_SOURCE_DIR}/src/drivers/display
+  ${CMAKE_SOURCE_DIR}/src/drivers/ir
 
   ${CMAKE_SOURCE_DIR}/lib/u8g2/csrc           # <-- ensures #include "u8g2.h" works anywhere
 )
