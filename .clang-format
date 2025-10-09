@@ -1,9 +1,48 @@
-basedonstyle: llvm
-indentwidth: 2
-tabwidth: 2
-usecrlf: false
-columnlimit: 100
-derivespointeralignment: false
-pointeralignment: left
-sortincludes: false
-spacesbeforeparens: control-statements
+BasedOnStyle: LLVM
+Language: C
+
+# indentation / tabs
+UseTab: Never            # spaces only (align comments cleanly)
+IndentWidth: 4
+ContinuationIndentWidth: 8
+TabWidth: 8              # editor/view width for tabs (if any show up)
+
+# line length
+ColumnLimit: 100
+
+# braces on next line (functions/controls)
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+# note: clang-format will not *insert* missing braces; see clang-tidy below.
+
+# spacing
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceAfterCStyleCast: true
+SpaceBeforeAssignmentOperators: true
+
+# pointers
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# alignment / wrapping
+AlignAfterOpenBracket: Align
+AlignOperands: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+BinPackArguments: false
+BinPackParameters: false
+
+# includes
+SortIncludes: false
+IncludeBlocks: Preserve
+
+# preprocessor / cases
+IndentCaseLabels: true
+IndentPPDirectives: None
+
+# comments
+ReflowComments: false     # keep your manual wrapping / doxygen blocks as typed

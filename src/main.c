@@ -10,15 +10,16 @@
 #include "drivers/display/display.h"
 #include "u8g2.h"
 
-
 int main(void)
 {
-  system_init();                 /* clocks, systick, gpio base, i2c1, display */
+    system_init(); 
 
-  if (!ir_init()) {              /* pa0/pa1/pa2 exti falling, pull-up */
-    system_error_loop();
-  }
+    if (!ir_init())
+    { 
+        system_error_loop();
+    }
 
-  while (1) {
-  }
+    while (1)
+    {
+    }
 }
